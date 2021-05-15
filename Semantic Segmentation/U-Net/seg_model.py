@@ -1,3 +1,4 @@
+#necessary imports
 from keras.models import *
 from keras.layers import *
 from keras import backend as keras
