@@ -1,7 +1,7 @@
-Name: Hafiz Sami Ullah (200436456)
+Name: Hafiz Sami Ullah 
 ==================================
 
-Project 1: Image Filtering and Hybrid Images
+Project: Image Filtering and Hybrid Images
 --------------------------------------------
 
 ![](./Part2_Hybrid/Filters/catdog_hybrid_image6.jpg)
