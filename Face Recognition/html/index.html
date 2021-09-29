@@ -1,0 +1,780 @@
+﻿<html>
+<head>
+<title>Computer Vision Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 110%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+	text-transform: loIrcase;
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 22px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 18px;
+	margin: 10px 0px 10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 960px;
+}
+
+#header {
+	background: #333;
+	width: 110%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 960px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 110%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 110%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+td img {
+  vertical-align: middle;
+}
+
+#contents a {
+}
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1><span style="color: #DE3737">Name: Hafiz Sami Ullah (200436456)</span></h1>
+</div>
+</div>
+<div class="container">
+
+<h2>Assignment 5: Face Detection with a Sliding Window</h2>
+
+
+<h3><b>Introduction</b>: </h3>
+<p>&emsp;&emsp;This assignment is implementation of sliding window face detection algorithm. The first part of this assignment is to extract features and generate a corresponding label for positive and negative class each. The next step is training a machine learning based model to perform classification task. Mainly this assignment is divided in following sections:
+
+
+
+<ol><a href="#L1"><b>Step I:</b>    Feature extraction for positive and negative examples</a></ol>
+<ol><a href="#L2"><b>Step II:</b>   Training a classifier and fine tuning</a></ol>
+<ol><a href="#L3"><b>Step III:</b>  Developing a face detector powered with a Support Vector Classifier</a></ol>
+<ol><a href="#L4"><b>Step  IV:</b>  Experimental evaluation and Results</a></ol>
+<ol><a href="#L5"><b>Step  V:</b>   Conclusion</a></ol>
+
+
+</p>
+
+
+<h3 id="L1"><b>Step I</b>: Feature extraction for positive and negative examples</h3>
+<p>&emsp;&emsp;
+In this assignment, Histogram of Gradients (HoG) is used as features. First, we extract features from positive examples, the one with faces, and then we extract features for negative examples. HoG is a feature descriptor mainly used to extract features from the data. It breaks image in small portion and calculates orientation at localized portion. There are different design parameters for HoG, one can select different cell size or number of orientations which at the end makes features rich or of poor quality. For this assignment I have used cell_size of 6. The image window used to extract features is chosen to be 36. So, if the image is bigger than 36x36, either one can scale it down or convert it into tiles to get a 36x36 window. Given the limitations of having a smaller number of examples one can target different feature manipulation mechanism to get more examples of dataset. One way of manipulating is augmenting the dataset. For example, if there is a face, it will still have same visual representation if we flip it in any direction. Blurring the image, cropping, and squeezing the image are some of the operations which give a greater number of examples to learn from. The other possible way to look at this is extracting the features at multiple scale to get a better representation of the dataset. Using more scales mean increasing time required for feature extraction. I have used Hog descriptor for image and its mirror in case of positive examples, whereas for negative examples a scale space is chosen to extract the feature. The below table shows some comparison on model performance for different scales of images. 
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-pu0z{background-color:#9b9b9b;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-pu0z">Scale Space</th>
+    <th class="tg-pu0z">True +ve rate</th>
+    <th class="tg-pu0z"> False +ve rate</th>
+    <th class="tg-pu0z">True -ve rate</th>
+    <th class="tg-pu0z">False -ve rate</th>
+    <th class="tg-pu0z">Accuracy</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">[1 ,0.8,0.6,0.4]</td>
+    <td class="tg-fymr">99.86%</td>
+    <td class="tg-0pky">0.069%</td>
+    <td class="tg-0pky">99.931%</td>
+    <td class="tg-0pky">0.194%</td>
+    <td class="tg-0pky">99.868%</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">[1,0.8,0.4,0.2]</td>
+    <td class="tg-0pky">99.821%</td>
+    <td class="tg-0pky">0.062%</td>
+    <td class="tg-0pky">99.938%</td>
+    <td class="tg-fymr">0.179%</td>
+    <td class="tg-fymr">99.879%</td>
+  </tr>
+  <tr>
+    <td class="tg-fymr">[1,0.8,0.35]</td>
+    <td class="tg-0pky">99.799%</td>
+    <td class="tg-fymr">0.054%</td>
+    <td class="tg-fymr">99.946%</td>
+    <td class="tg-0pky">0.201%</td>
+    <td class="tg-0pky">99.871%</td>
+  </tr>
+  <tr>
+    <td class="tg-fymr">[1,0.8,0.4]</td>
+    <td class="tg-0pky">99.806%</td>
+    <td class="tg-0pky">0.057%</td>
+    <td class="tg-0pky">99.943%</td>
+    <td class="tg-0pky">0.194%</td>
+    <td class="tg-0pky">99.876%</td>
+  </tr>
+</tbody>
+</table>
+
+ It is evident from the table changing the scale does affect the accuracy, but it does not vary after a certain scale space. I have chosen scale space of [1, 0.8, 0.4] given the constraint of runtime, and accuracy compromise. For each image tile of 32x32, a feature vector is extracted with 1116 features in it. The below code routine explains the algorithm used for feature extraction. 
+
+
+<pre><code><p><b>Extracting features from Positive examples</b>
+#This routine reads the image in graysclae use HoG to compute features</p>
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+    
+    n_cell = np.ceil(win_size/cell_size).astype('int')
+    feats = np.random.rand(len(positive_files)*2, n_cell*n_cell*31)
+    
+    temp = 0
+    for filename in positive_files:
+        
+        img = load_image_gray(filename) # reading image
+        mirror_img = img[:, ::-1] # mirror image
+        hog_feat = vlfeat.hog.hog(img, cell_size) # hog feature extraction
+        feats[temp,:] = hog_feat.flatten()# saving in features as a flattened matrix (vector)
+        temp = temp+1
+        
+        
+        hog_feat_mirror = vlfeat.hog.hog(mirror_img, cell_size) # hog feature extraction from mirror image
+        feats[temp, :] = hog_feat_mirror.flatten()# saving in features as a flattened matrix (vector)
+        temp = temp + 1
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+
+</code></pre>
+
+The above routine just uses the positive examples and extracts features from original image and its mirror image. Each image leads to 1116 features with the given size of 36x36 for the input image. All the images available within positive examples have same dimension of 36x36. Given M number of images, the above feature extractor leads to 2xM feature examples with each feature vector containing 1116 features each. Again, the number of examples can be artificially increased using augmentation technique. 
+
+</p>
+<p>&emsp;&emsp;
+The negative example images are not of the same shape i.e., each image has different dimension. Also given the criteria we used before we must keep the number of features same. Using a reduced version of image may not be helpful because we are losing valuable information. To tackle this challenge, I have taken a tiles of size 36x36 to maintain the same feature size while not reducing the image resolution. To enhance the dataset and to introduce the more diverse feature space I use different scaled versions of the image. Once the features are extracted randomly 15000 number of features are chosen to later train the model. 
+The performance using different number of features is displayed in table below:
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-1wig{font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-266k{background-color:#9b9b9b;border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-pu0z{background-color:#9b9b9b;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-pu0z">Features</th>
+    <th class="tg-266k">True +ve rate</th>
+    <th class="tg-pu0z"> False +ve rate</th>
+    <th class="tg-pu0z">True -ve rate</th>
+    <th class="tg-pu0z">False -ve rate</th>
+    <th class="tg-pu0z">Accuracy</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">10000</td>
+    <td class="tg-0pky">99.821%</td>
+    <td class="tg-0pky">0.140%</td>
+    <td class="tg-0pky">99.860%</td>
+    <td class="tg-0pky">0.179%</td>
+    <td class="tg-0pky">99.871%</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">14000</td>
+    <td class="tg-0pky">99.806%</td>
+    <td class="tg-0pky">0.057%</td>
+    <td class="tg-0pky">99.943%</td>
+    <td class="tg-0pky">0.194%</td>
+    <td class="tg-0pky">99.876%</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">15000</td>
+    <td class="tg-1wig">99.829%</td>
+    <td class="tg-0lax">0.080%</td>
+    <td class="tg-0lax">99.920%</td>
+    <td class="tg-0lax"><span style="font-weight:bold">0.171%</span><br></td>
+    <td class="tg-0lax"><span style="font-weight:bold">99.877%</span></td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">20000</td>
+    <td class="tg-0lax">99.754%</td>
+    <td class="tg-1wig">0.045%</td>
+    <td class="tg-1wig">99.955%</td>
+    <td class="tg-0lax">0.246%</td>
+    <td class="tg-0lax">99.874%</td>
+  </tr>
+</tbody>
+</table>
+
+The code below extracts the features at different scales of image for negative examples.
+
+<pre><code><p><b>Extracting features from Negative examples</b>
+#This routine reads the image in graysclae use HoG to compute features at three different scales</p>
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+    
+    n_cell = np.ceil(win_size/cell_size).astype('int')
+    
+    feats=[]
+    k = 0
+    for filename in negative_files:
+        
+        img = load_image_gray(filename)
+
+        scales = [1.0, 0.8, 0.4]  # 3 Different scales for extracting the  
+
+        for scale in scales: # 
+            img = cv2.resize(img, dsize=None, fx=scale, fy=scale) # resizing to the scale of image
+
+            height, width = img.shape # extracting height and width
+            
+            ntiles_height = int(height/36) # Number of possible tiles along height with height of 36 pixel 
+            ntiles_width  = int(width/36)  # Number of possible tiles along width with width of 36 pixel 
+
+            '''The below routine compute HOG features for each of the 36x36 tile 
+               in the given image. Some images have height and/or width are not 
+               completely divisible by 36. In that case I do not consider extra
+               pixel (less than 36)'''
+            
+            for i in range(ntiles_height): 
+                for j in range(ntiles_width):
+                    if ((i+1)*36 <= height and (j+1)*36<=width): # select only complete tiles but not less than 36
+                        s = img[36*i:36*(i+1) , 36*j: 36*(j+1)]
+                        hog_feats = vlfeat.hog.hog(s, cell_size) # hog feature extraction
+                        feats.append(hog_feats.flatten())
+                        k = k+1
+
+    indices = np.random.randint(0,k,14000) # choosing 14000 values randomly  
+    feats  =np.asarray(feats) # Converting feature list into array
+    feats = feats[indices,:] # Only taking the 14000 random  examples
+
+
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+</code></pre>
+
+</p>
+
+<h3 id="L2"><b>Step II</b>: Training a classifier and fine tuning</h3>
+<p>&emsp;&emsp;
+This part of the assignment is mainly related to using the features to learn mapping from image to its class i.e., face or non-face. The design parameter C is required along with the X, the examples, and Y, the output label. In this part I have used Linear support vector machine to learn X to Y mapping. The C is regularization parameter, it specifies the strength of the regularization with inverse proportion to its value. The value of C can not be negative. The value of C is decided after experimenting with multiple thresholds. The below table gives a bird eye view of model evaluation for different values of C.
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-pu0z{background-color:#9b9b9b;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-pu0z">Regularization (C)</th>
+    <th class="tg-pu0z">True +ve rate</th>
+    <th class="tg-pu0z"> False +ve rate</th>
+    <th class="tg-pu0z">True -ve rate</th>
+    <th class="tg-pu0z">False -ve rate</th>
+    <th class="tg-pu0z">Accuracy</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">0.01</td>
+    <td class="tg-0pky">99.419%</td>
+    <td class="tg-0pky">0.105%</td>
+    <td class="tg-0pky">99.895%</td>
+    <td class="tg-0pky">0.581%</td>
+    <td class="tg-0pky">99.704%</td>
+  </tr>
+  <tr>
+    <td class="tg-fymr">5e-2</td>
+    <td class="tg-fymr">99.754%</td>
+    <td class="tg-fymr">0.045%</td>
+    <td class="tg-fymr">99.955%</td>
+    <td class="tg-fymr">0.246%</td>
+    <td class="tg-fymr">99.874%</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">5e-3</td>
+    <td class="tg-0lax">99.225%</td>
+    <td class="tg-0lax">0.115%</td>
+    <td class="tg-0lax">99.885%</td>
+    <td class="tg-0lax">0.775%</td>
+    <td class="tg-0lax">99.62%</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1e-4</td>
+    <td class="tg-0lax">97.17%</td>
+    <td class="tg-0lax">0.250%</td>
+    <td class="tg-0lax">99.75%</td>
+    <td class="tg-0lax">2.83%</td>
+    <td class="tg-0lax">98.714%</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1e-5</td>
+    <td class="tg-0lax">91.457%</td>
+    <td class="tg-0lax">0.725%</td>
+    <td class="tg-0lax">99.275%</td>
+    <td class="tg-0lax">8.543%</td>
+    <td class="tg-0lax">96.135%</td>
+  </tr>
+</tbody>
+</table>
+
+We can see the best value for C is 5e-2. For training the model, we are required to generate the Y (labels) for each of the example feature vector. Positive one value is assigned to all the examples with face and negative one is assigned to each feature vector representing non face image patch. 
+Below is the code for initializing and training the model using the positive and negative class features.
+
+</p>
+
+<pre><code><p><b>Support Vector Machine for Face and Non Face Classification</b>
+
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+
+    c_ = C
+    clf = LinearSVC(C = c_)# Linear Support Vector Classification with c as Regularization parameter
+    y_pos =  np.ones(((features_pos.shape[0]),1)) # positive class label 
+    y_neg = np.ones(((features_neg.shape[0],1)))*-1 # Negative class label
+    
+    # Stacking the labels and features vectors in a single column
+    y_train = np.vstack((y_pos,y_neg)) 
+    X_train = np.vstack((features_pos,features_neg)) 
+    
+    #Training the model 
+    svm = clf.fit(X_train,y_train[:,0])
+
+    
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+</code></pre>
+<p>&emsp;&emsp; With C=5e-2, 14000 negative examples extracted using scale space of [1.0, 0.8, 0.4] is used to train Support vector Classifier (SVC). The resultant model when checked on the same data it performs well with accuracy of 99.872%. To fine tune the model we use the prediction of the model to collect false positive which are then again used to train the model. To increase robustness in the scheme the scale space technique is used with a scale space of [1.0, 0.8, 0.4]. Out of all the negative examples the 129 example tiles remain false positive. Retraining the model with the false positives and the examples we already have improves the true negatives detection and reduces the false positive rate from 0.079% to 0.036% but it does not improve the overall score of accuracy. The code below is for collecting the false positives from negative examples.
+
+<pre><code><p><b>Collecting False Positve from Negative examples</b>
+
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+
+    n_cell = np.ceil(win_size/cell_size).astype('int')
+    feats = []
+    
+    i = 0
+
+    
+    for filename in negative_files:
+        
+        img = load_image_gray(filename)
+
+        scales = [1.0, 0.8,0.4]  # 3 Different scales for extracting the  
+
+        for scale in scales: # 
+            img = cv2.resize(img, dsize=None, fx=scale, fy=scale) # resizing to the scale of image
+
+            height, width = img.shape # extracting height and width
+            
+            ntiles_height = int(height/36) # Number of possible tiles along height with height of 36 pixel 
+            ntiles_width  = int(width/36)  # Number of possible tiles along width with width of 36 pixel 
+
+            '''The below routine compute HOG features for each of the 36x36 tile 
+               in the given image. Some images have height and/or width are not 
+               completely divisible by 36. In that case I do not consider extra
+               pixel (less than 36)'''
+            
+            for i in range(ntiles_height): 
+                for j in range(ntiles_width):
+                    if ((i+1)*36 <= height and (j+1)*36<=width): # select only complete tiles but not less than 36
+                        s = img[36*i:36*(i+1) , 36*j: 36*(j+1)]
+                        hog_feats = vlfeat.hog.hog(s, cell_size) # hog feature extraction
+                        
+                        y_pred = svm.predict(np.expand_dims(hog_feats.flatten(),axis=0))
+                        
+                        if(y_pred == 1):
+                            feats.append(hog_feats.flatten())
+
+    feats = np.asarray(feats)
+
+    
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+</code></pre>
+</p>
+
+
+<h3 id="L3"><b>Step III</b>:Developing a face detector powered with a Support Vector Classifier</h3>
+<p>&emsp;&emsp;
+This  part of the assignment deals  with detection of faces in each image. The first step is to create non-overlapping tiles from the input image, this input image tile is passed through HoG feature extractor and resultant is fed to SVC for classification. This task is  done for  multiple scales and then non-maxima suppression is used to get rid of repeated detection along with getting most confident detection.  
+The code routine below shows the detection and saving of the results:
+</p>
+
+<pre><code><p><b>Sliding window apporach for face detection</b>
+#This routine takes an image and find the confident bounding box for all the faces </p>
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+
+        k = 0 # Number of detections
+        threshold = -1 # Threshold value for deciding about the side of boundary we are at
+        stride = 1
+
+        cur_bboxes_old = np.empty((0, 4))
+        cur_confidences_old = np.empty((0))
+
+        scale_space = [0.9,0.8,0.7,0.65,0.5,0.4,0.35,0.2,0.1] #scale space
+
+        for scale in scale_space:
+            # initializing arrays
+ 
+            cur_x_min = np.empty((0, 1))
+            cur_y_min = np.empty((0, 1))
+            cur_bboxes = np.empty((0, 4))
+            cur_confidences = np.empty((0))
+            
+            #Scaling image based on required scale
+
+            img = cv2.resize(im, dsize = None, fx = scale, fy = scale)
+            # Computing HOG features
+            features = vlfeat.hog.hog(img, cell_size)
+
+            for height in range(features.shape[0]):
+                for width in range(features.shape[1]):
+                    x_min = height
+                    y_min = width
+                    if x_min+template_size < features.shape[0] and y_min+template_size < features.shape[1]:
+                        #selecting a window of features (same like used for training)
+                        feature_window = features[x_min:x_min+template_size,y_min:y_min+template_size]
+                        feature_flattened = np.expand_dims(feature_window.flatten(),axis=0)
+                        
+                        conf = svm.decision_function(feature_flattened)#side of the hyperplane 
+
+                        if conf >= threshold: 
+                            k = k + 1
+                            #stacking results for x_min and y_min
+                            cur_x_min = np.vstack((cur_x_min,x_min)) 
+                            cur_y_min = np.vstack((cur_y_min,y_min))
+                            cur_confidences = np.hstack((cur_confidences,conf))
+
+            x_min_image =  (cur_x_min*template_size/scale).astype('int')
+            y_min_image =  (cur_y_min*template_size/scale).astype('int')
+            x_max_image = ((cur_x_min + template_size)*template_size/scale).astype('int')
+            y_max_image = ((cur_y_min + template_size)*template_size/scale).astype('int')
+
+            cur_bboxes = np.hstack([y_min_image,x_min_image,y_max_image,x_max_image])
+            cur_bboxes_old = np.vstack((cur_bboxes_old,cur_bboxes))
+            cur_confidences_old = np.hstack((cur_confidences_old,cur_confidences))
+
+        cur_confidences = cur_confidences_old
+        cur_bboxes = cur_bboxes_old
+
+
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+</code></pre>
+
+<p>&emsp;&emsp;
+It can be seen from the above routine that sliding window along with scale space is used to effectively detect the faces in a given image.  
+</p>
+
+
+<h3 id="L4"><b>Step IV</b>:Experimental evaluation and Results</h3>
+
+<p>&emsp;&emsp;
+The evaluation is  done mainly for the number of features, number of examples, different scale space, threshold C for linear support vector classifier. I also performed experiments for different value of cell_size in HoG feature extractor.  This leads to more feature for a single  example. The problem with small value of cell_size is it comes with a cost of more computation time. Because of its time expensive nature,  a balance must be chosen to get the favourable results. 
+The figure below shows HoG output for different value of cell_size. 
+
+<table border=1>
+<tr>
+<td>
+<div style="float: left; padding: 20px">
+<img src="hog1.png"  height="315" widht="800"/>
+</div>
+<div style="float: right; padding: 20px">
+<img src="hog2.png"  height="315" widht="800" />
+</div>
+</td>
+</tr>
+<p style="font-size: 14px">Fig 1: HoG for cell_size 6</p>
+</table>
+
+
+<table border=1>
+<tr>
+<td>
+<div style="float: left; padding: 20px">
+<img src="hog_2_1.png"  height="315" widht="800"/>
+</div>
+<div style="float: right; padding: 20px">
+<img src="hog_2_2.png"  height="315" widht="800" />
+</div>
+</td>
+</tr>
+<p style="font-size: 14px">Fig 2: HoG for cell_size 2</p>
+</table>
+As we discussed earlier that using hard negative examples to retrain the model doesn’t improve the accuracy much, but the results are more evident for this fine tuning when we see the Average Precision(AP) curve. The retrained model is more confident and has almost 2% higher AP as compared to the model which is not fine-tuned.  The figure below show this comparison. 
+
+
+
+<table border=1>
+<tr>
+<td>
+<div style="float: left; padding: 20px">
+<img src="ap1.png"  height="280" widht="450"/>
+</div>
+<div style="float: right; padding: 20px">
+<img src="recall1.png"  height="280" widht="450" />
+</div>
+</td>
+</tr>
+<p style="font-size: 14px">Fig 3: Average Precision and Recall curve without fine-tuning</p>
+</table>
+
+
+<table border=1>
+<tr>
+<td>
+<div style="float: left; padding: 20px">
+<img src="ap2.png"  height="280" widht="450"/>
+</div>
+<div style="float: right; padding: 20px">
+<img src="recall2.png"  height="280" widht="450" />
+</div>
+</td>
+</tr>
+<p style="font-size: 14px">Fig 4: Average Precision and Recall curve with fine-tuning</p>
+</table>
+
+The boundary and the division of all the detection can be seen from the below graph for 2 different cell sizes.  
+
+<table border=1>
+<tr>
+<td>
+<div style="float: left; padding: 20px">
+<img src="division of faces-nonfaces1.png"  height="280" widht="450"/>
+</div>
+<div style="float: right; padding: 20px">
+<img src="division of faces-nonfaces.png"  height="280" widht="450" />
+</div>
+</td>
+</tr>
+<p style="font-size: 14px">Fig 5: (a) Distribution for cell_size 6 (b)Distribution for cell_size 2</p>
+</table>
+
+It is clear that using small cell size leads to a more confident model as there is very prominent division between two classes for cell size 2.
+The results for different figures are attached in the below figures:
+<div style="float: center; padding: 20px">
+<img src="r1.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+
+<div style="float: center; padding: 20px">
+<img src="r2.png" width = '100%'/>
+<p style="font-size: 14px">  Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r3.png" width = '100%'/>
+<p style="font-size: 14px">Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r4.png" width = '100%'/>
+<p style="font-size: 14px">  Results</p>
+</div>
+
+
+<div style="float: center; padding: 20px">
+<img src="r5.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r6.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+
+<div style="float: center; padding: 20px">
+<img src="r7.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r8.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+
+<div style="float: center; padding: 20px">
+<img src="r9.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r10.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+
+<div style="float: center; padding: 20px">
+<img src="r6.png.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r6.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+
+<div style="float: center; padding: 20px">
+<img src="r11.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r12.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+
+<div style="float: center; padding: 20px">
+<img src="r121.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r13.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+
+<div style="float: center; padding: 20px">
+<img src="r14.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+<div style="float: center; padding: 20px">
+<img src="r15.png" width = '100%'/>
+<p style="font-size: 14px"> Results</p>
+</div>
+
+
+<h3 id="L5"><b>Conclusion:</b></h3>
+
+<p>&emsp;&emsp;
+In this assignment, the main goal was to use manual feature extraction methods to train support vector classifier. Non maximal suppression is used to detect the best outcome. It is evident from the tables above that playing with parameters make big difference on accuracy. Using small step size leads to more average precision but also more false positives. Instead of choosing zero as threshold choosing threshold towards -ve class does help in getting good decision boundary for the end task of maximal suppression. Also, giving more top detection to Non-max-suppression will leads to more false positives. Its seems that giving 100 top detections works better. Using more top detections may cause trouble for the true positive to be thrown out.</p>
+
+
+
+</body>
+</html>
