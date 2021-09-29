@@ -1,7 +1,7 @@
-Name: Hafiz Sami Ullah (200436456)
+
 ==================================
 
-Assignment 2: Local Feature Matching
+Project : Local Feature Matching
 ------------------------------------
 
 ![](../results/vis_circles_2.jpg)
