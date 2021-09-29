@@ -1,7 +1,5 @@
-Name: Hafiz Sami Ullah (200436456)
 ==================================
-
-Assignment 5: Face Detection with a Sliding Window
+Project: Face Detection with a Sliding Window
 --------------------------------------------------
 
 ### **Introduction**:
