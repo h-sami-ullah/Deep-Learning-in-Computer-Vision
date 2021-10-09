@@ -1,0 +1,601 @@
+﻿<html>
+<head>
+<title>Computer Vision Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 110%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+	text-transform: loIrcase;
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 22px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-Iight: normal;
+	font-size: 18px;
+	margin: 10px 0px 10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 960px;
+}
+
+#header {
+	background: #333;
+	width: 110%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 960px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 110%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 110%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+td img {
+  vertical-align: middle;
+}
+
+#contents a {
+}
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1><span style="color: #DE3737">Name: Hafiz Sami Ullah (200436456)</span></h1>
+</div>
+</div>
+<div class="container">
+
+<h2>Assignment 4: Scene Recognition with Bag-of-Words</h2>
+
+
+<h3><b>Introduction</b>: </h3>
+<p>&emsp;&emsp;This assignment primarily focusses on image classification task using bag-of-words scheme. The bag-of-words technique involves obtaining a visual dictionary through unsupervised/supervised mechanism. There are multiple ways one can achieve this goal e.g., the dictionary can be made up of HOG backend or may be SIFT backend features. The scheme is to first find the local features using SIFT/HOG or any other local feature extractor, and then using these feature vector extracts representative vector as words from these local features. In this assignment K-means clustering is used to find the cluster centres. Once the clustering is done and we have centre of the clusters as vocabulary. To give a bigger picture, the goal of this assignment is to explore the possible combination of feature representation method and classification approach for a dataset having 15 different classes. The assignment starts with creating tiny images from large sized images. These are used as features dictionary and used to predict query using nearest neighbour algorithm. Then the comparison is made with features extracted using SIFT feature extractor. This assignment also focusses on using linear Support vector machine for multiclass classification. Overall, the main deliverables of this assignment are:
+
+
+
+<ol><a href="#L1"><b>Step I:</b>    Large Image to tiny Images as features</a></ol>
+<ol><a href="#L2"><b>Step II:</b>   Nearest Neighbour Classifier</a></ol>
+<ol><a href="#L3"><b>Step III:</b>  SIFT, K-means clustering, and bag-of-word </a></ol>
+<ol><a href="#L4"><b>Step  V:</b>   Linear Support Vector classifiers for multiclass classifier</a></ol>
+<ol><a href="#L5"><b>Step VI:</b>   Experimental evaluation and Results</a></ol> 
+
+</p>
+
+
+<h3 id="L1"><b>Step I</b>: Large Image to tiny Images as features</h3>
+<p>&emsp;&emsp;
+In this part of the assignment the task is to read the images and build feature map from each image. Instead of performing different manipulations on images, this step just resizes the images and build a feature vector for each of the class. I consider the resize image to be 16x16 and it is done for all the images (1500 total images). 
+Below code snip is discussed to perform the above-described task. 
+
+<pre><code><p><b>Reading Images and resizing the image</b>
+#This routine reads the image in graysclae and use it as a feature</p>
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+  h = 16 # hight
+  w = 16 #width
+  feats = np.zeros((len(image_paths), h*w)) # zero amtrix of shape (number of samples, 16x16)
+  for i , path in enumerate(image_paths): #for all the images
+    
+    image = load_image_gray(path) #load graysclae image
+    img_reshape = cv2.resize(image,(16,16)).flatten() #resize the image and converts intot a vector of size (1,256)
+    image_normalized = (img_reshape - np.mean(img_reshape))/np.std(img_reshape) # Normalizing the vector
+    feats[i,:] = image_normalized #saving the feature for each image
+
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+
+</code></pre>
+
+The above routine generates a feature matrix of shape (number_of_images,16x16). These are the flattened images with the dimension of 16x16. Also note that these images are not only resized but normalized to have a unit variance and zero mean.
+
+</p>
+
+
+<h3 id="L2"><b>Step II</b>: Nearest Neighbour Classifier</h3>
+<p>&emsp;&emsp;
+Nearest neighbour classifier classifies input based on distance matrix. Suppose there are N training data samples, the images with known classes, a query is made and based on distance from all the training images the label for the training example with least distance from the query is the label for the query. This case is suitable for 1 Nearest neighbour. In case of K neighbours, the voting is done and based on that the class of the input query is chosen. In other words, K Nearest Neighbour stores all the training examples and the ground truth and predict the class of new query data or case with respect to similarity measure. The code routine is shown below: 
+</p>
+
+<pre><code><p><b>1- Nearest Neighbour for classification</b>
+
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+
+  K = 1 # selecting number of neighbours
+
+  N = train_image_feats.shape[0]
+  M = test_image_feats.shape[0]
+  d = train_image_feats.shape[1] # d are same in both train and test
+
+  
+  dist = sklearn_pairwise.pairwise_distances(test_image_feats, train_image_feats) #pairwise distance 
+ 
+  test_labels = []
+  
+  for each in dist:
+    labels = []
+    idx = np.argsort(each)# sorting based on index
+   
+    #print(idx,'I am idx')
+    for i in range(K):# How many neighbours?
+        labels.append(train_labels[idx[i]])
+
+    #print(labels)
+    
+
+            
+    test_labels.append(labels[0]) #for now just save the first nearest
+    
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+</code></pre>
+<p>&emsp;&emsp; The above code only consider first nearest, one can extend this code by deployoing voting mechanism from multiple neighbours.
+</p>
+
+<h3 id="L3"><b>Step III</b>: SIFT, K-means clustering, and bag-of-word </h3>
+<p>&emsp;&emsp;
+The first step in this part is extracting local features using SIFT. The second step is to cluster these features and find the centre point of each cluster. This is what we call vocabulary, in this experiment the vocabulary  has a dimension of 400x128. I use a step size of 10 with fast computation for SIFT feature extractor. The k-means++ is used for clustering, where the initial centre is chosen randomly. The next step is to fins the bag of features, i.e., bag of sift features. I first computed the sift descriptor with a step size of 10 and using approximate and fast computation method. Then based on distance from the cluster’s vocabulary made earlier the histogram bins are computed which are then normalized. These normalized features are the bag of words and the magnitude of the bins tell that how many times a particular feature appears in an image. 
+The two routines below serve this purpose, the code is commented for better understanding of the reader.
+</p>
+
+<pre><code><p><b>Routine for build_vocabulary</b>
+#This routine reads the image in graysclae and use SIFT and K-means to serve the purpose</p>
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+    
+  dim = 128      # length of the SIFT descriptors that you are going to compute.
+
+  vocab = np.zeros((vocab_size,dim)) # intialization of vocab
+  bag_of_features = [] 
+    
+    
+  for path in image_paths:
+        img = np.asarray(load_image_gray(path),dtype='float32') # loading grayscale image and converting it to numpy array
+        frames, descriptors = dsift(img, step=[10,10], fast=True) #SIFT descriptor using step size of 10 and fast true 
+        bag_of_features.append(descriptors)
+
+  bag_of_features = np.concatenate(bag_of_features, axis=0).astype('float32') #list into an array
+    
+    
+  print("Compute vocab")
+  start_time = time.time()
+  vocab = kmeans(bag_of_features, vocab_size, initialization="PLUSPLUS") # using kmeans for clusters center       
+  end_time = time.time()
+  print("It takes ", (end_time - start_time), " to compute vocab.")
+  
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+</code></pre>
+
+
+
+<pre><code><p><b>Routine for get_bags_of_sifts</b>
+#This routine reads the image in graysclae and use SIFT to find the histogram bins</p>
+
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+
+  # load vocabulary
+  with open(vocab_filename, 'rb') as f:
+    vocab = pickle.load(f)
+
+  # dummy features variable
+  feats = []
+
+  start_time = time.time()
+  print("Construct bags of sifts...")
+
+  for path in image_paths:
+        img = np.asarray(load_image_gray(path),dtype='float32') # reading the image
+        frames, descriptors = dsift(img, step=[5,5], fast=True) # SIFT descriptor with step size 5
+        dist = distance.cdist(descriptors,vocab, metric='euclidean')# euclidean distance calcualtion from each clusster center 
+        closest_vocab = np.argsort(dist,axis=1)[:,0] # sorting the index of distance
+        ind ,count = np.unique(closest_vocab,return_counts=True) # finding unique values
+        histogram = np.zeros(len(vocab)) 
+        histogram[ind] += count 
+        histogram = [float(i)/sum(histogram) for i in histogram] # Normalizing histogram
+     
+        feats.append(histogram) 
+
+  feats = np.asarray(feats) # List to array
+
+  end_time = time.time()
+  print("It takes ", (end_time - start_time), " to construct bags of sifts.")
+
+
+
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+</code></pre>
+
+<p>&emsp;&emsp;
+Once the features are in representable form one use to them to train Nearest neighbour or any other classifer. One thing to note here is the tunning parameteres. For example, if we decrease the step size in 
+SIFT, there will be more enriched details, similarly using lareger dimension for vocabulary can leads to high performance gain. 
+</p>
+
+
+<h3 id="L4"><b>Step IV</b>:Linear Support Vector classifiers for multiclass classifier</h3>
+
+<p>&emsp;&emsp;
+Support vector machine are the supervised machine learning models based on statistical learning frameworks. In this project we develop 15 (there are 15 categories) one vs all classifier to build a multiclass classifier. The features extracted in previous part are used to train the label. There are two approaches to do this task. 
+<ol><b>Option I:</b>  Using SKlearn built in one vs all model </ol>
+<ol><b>Option II:</b>  Using SKlearn built in linear model and combine them</ol>
+I have included option I in comments, it is just one line code and make its handy to solve this problem. If the option II is chosen, we must initialize N (Number of categories) support vector classifiers to detect each class. Also, the label data will be required to pre process before training the model. I convert the labels in one and zero for each of the category individually and use this process data to train all the svms. To understand how one vs rest classifier works refer to below figure:
+
+<div style="float: center; padding: 20px">
+<img src="one_vs_all.png" width = '100%'/>
+<p style="font-size: 14px"> Figure 1: One vs All SVM understanding(taken from Internet)</p>
+</div>
+
+
+The models are trained for maximum of 1500 iterations with squared hinge loss and tolerance of 0.001. Once the training is done the slope and intercept is extracted from each classifier and a weight and bias matrix is formed.
+As second last step I implemented the simple equation of slope intercept form i.e, WX + B. The output of this equation is passed through a max argument calculator to finally label the class the image belongs to.
+Below is the code routine to perform these task.
+</p>
+<pre><code><p><b>One vs all linear Support Vector Classifier</b>
+
+
+  #############################################################################
+  # TODO: YOUR CODE HERE                                                      #
+  #############################################################################
+
+  # categories
+  categories = list(set(train_labels))
+  
+  # construct 1 vs all SVMs for each category
+  svms = {cat: LinearSVC(random_state=0,C=7,max_iter=1500,loss='squared_hinge',tol=1e-3) for cat in categories}
+
+  test_labels = []
+  w=[] # intialization for weights 
+  b=[] # intialization for intercept
+
+  '''
+  
+  #Direct Way of performing this operation # Option I
+  
+  one_vs_all = OneVsRestClassifier(LinearSVC(random_state=0,C=7, multi_class='ovr',max_iter=1500, 
+                                      tol=1e-3)).fit(train_image_feats, train_labels)
+  test_labels =  one_vs_all.predict(test_image_feats) 
+  '''
+  data = {cat: np.where(np.asarray(train_labels)==cat,1,0) for cat in categories} # creating one vs all data for all categories
+  trained = {cat:svms[cat].fit(train_image_feats, data[cat]) for cat in categories}# training one vs all linearsvc for all 
+                                                                                   # categories
+ 
+  # extracting weights and bais for each classifier
+  for i, cat in enumerate(categories):
+    w.append(trained[cat].coef_[0])
+    b.append(trained[cat].intercept_)
+    print(cat)
+  w =np.asarray(w)
+  b =np.asarray(b)  
+  #print(categories)
+  
+  label = (np.dot(test_image_feats,w.T)+b[:,0]) # calculating wx+b
+  labels = np.argmax(label,axis=1) # calculating the index of max in each 
+  test_labels = [categories[index] for index in labels] # Assigning the categories for each index
+  
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+</code></pre>
+
+
+<h3 id="L5"><b>Experimental evaluation and Results:</b></h3>
+
+<p>&emsp;&emsp;
+I perfrom simple comparison of nearest neighbour and support vector classifier. Firstly, the features we get in first step (tiny_images) are used to as training data for a 1-NN schematic. The results are not very good, the accuracy is just 23.33%. The confusion matrix is attached below:
+
+<div style="float: center; padding: 20px">
+<img src="tiny_nn.png" width = '100%'/>
+<p style="font-size: 14px"> Figure 2: Confusion matrix using Tiny images and nearest neighbour</p>
+</div>
+
+The same model is when used with bag of SIFT faetures the accuracy increases by 29% with value of 51.87%. The confusion matrix for nearest neighbour and bag of SIFT features as training data is reported below:
+
+<div style="float: center; padding: 20px">
+<img src="bow_nn.png" width = '100%'/>
+<p style="font-size: 14px"> Figure 3: Confusion matrix using Bag of SIFT features and nearest neighbour</p>
+</div>
+
+Support vector classifier outperforms nearest neighbour classifier with an achievement of nearly 13% in accuracy. The model mostly confuses the bedroom with the living room. The confusion matrix using SVM is attached below:
+
+<div style="float: center; padding: 20px">
+<img src="bow_svm.png" width = '100%'/>
+<p style="font-size: 14px"> Figure 4: Confusion matrix using Bag of SIFT features and SVM</p>
+</div>
+</p>
+
+
+<center>
+<table border="1">
+<tr>
+<th>Feature Type</th>
+<th>Classifier</th>
+<th>Accuracy(%)</th>
+</tr>
+<tr>
+<td>Tiny images</td>
+<td>1-Nearest Neighbour</td>
+<td>23.33%</td>
+</tr>
+<tr>
+<td>Bag of SIFT</td> 
+<td>1-Nearest Neighbour</td>
+<td>51.87%</td>
+</tr>
+<tr>
+<td>Bag of SIFT</td> 
+<td>Linear Support Vector Classifier</td>
+<td>64.53%</td>
+</tr>
+</table>
+</center>
+<p><br></p>
+
+I also used differnet size of the vocabulary to understand the importance of and size of the vocabulary. For this purpose I tried 10, 20, 50, 100, 200, 400, and 1000 vocabulary sizes. The table below reports the results on the different size of vocabulary:
+
+
+<center>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-bk1o{background-color:#ffffc7;border-color:#009901;text-align:left;vertical-align:top}
+.tg .tg-bjsw{background-color:#c0c0c0;border-color:#009901;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-5v57{border-color:#009901;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-bjsw">Vocabulary size</th>
+    <th class="tg-bjsw">1-NN</th>
+    <th class="tg-bjsw">SVM</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-5v57">10</td>
+    <td class="tg-5v57">34.47%</td>
+    <td class="tg-5v57">40.80%</td>
+  </tr>
+  <tr>
+    <td class="tg-5v57">20</td>
+    <td class="tg-5v57">44.67%</td>
+    <td class="tg-5v57">53.13%</td>
+  </tr>
+  <tr>
+    <td class="tg-5v57">100</td>
+    <td class="tg-5v57">49.13%</td>
+    <td class="tg-5v57">61.4%</td>
+  </tr>
+  <tr>
+    <td class="tg-5v57">200</td>
+    <td class="tg-5v57">51.60%</td>
+    <td class="tg-5v57">64.27%</td>
+  </tr>
+  <tr>
+    <td class="tg-bk1o">400</td>
+    <td class="tg-bk1o">51.87%</td>
+    <td class="tg-bk1o">64.53%</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1000</td>
+    <td class="tg-0lax">49.93%</td>
+    <td class="tg-0lax">63.13%</td>
+  </tr>
+</tbody>
+</table>
+</center>
+
+
+It is evident from the resutls that using enriched vocabulary leads to more prominent results but at a cost of spending very big amount of time on feature extraction. I have choosen a compromised value between time and accuracy. The vocabulary with size 400 perfroms the best among the compared.   
+
+
+
+
+</p>
+
+
+
+<table border=0 cellpadding=4 cellspacing=1>
+<tr>
+<th>Category</th>
+<th colspan=2>True positives</th>
+<th colspan=2>False positives with true label</th>
+<th colspan=2>False negatives with predicted label</th>
+</tr>
+
+<td>Store</td>
+<td bgcolor=GreenYellow><img src="results/Store_image_0038.jpg" width=100 height=75></td>
+<td bgcolor=GreenYellow><img src="results/Store_image_0127.jpg" width=118 height=75></td>
+<td bgcolor=LightCoral><img src="results/Kitchen_image_0168.jpg" width=112 height=75><br><small>Kitchen</small></td>
+<td bgcolor=LightCoral><img src="results/LivingRoom_image_0045.jpg" width=115 height=75><br><small>LivingRoom</small></td>
+<td bgcolor=SkyBlue><img src="results/Store_image_0057.jpg" width=100 height=75><br><small>Kitchen</small></td>
+<td bgcolor=SkyBlue><img src="results/Store_image_0002.jpg" width=100 height=75><br><small>Mountain</small></td>
+</tr>
+<tr>
+<td>Coast</td>
+<td bgcolor=GreenYellow><img src="results/Coast_image_0055.jpg" width=75 height=75></td>
+<td bgcolor=GreenYellow><img src="results/Coast_image_0104.jpg" width=75 height=75></td>
+<td bgcolor=LightCoral><img src="results/Mountain_image_0030.jpg" width=75 height=75><br><small>Mountain</small></td>
+<td bgcolor=LightCoral><img src="results/OpenCountry_image_0042.jpg" width=75 height=75><br><small>OpenCountry</small></td>
+<td bgcolor=SkyBlue><img src="results/Coast_image_0097.jpg" width=75 height=75><br><small>Mountain</small></td>
+<td bgcolor=SkyBlue><img src="results/Coast_image_0070.jpg" width=75 height=75><br><small>OpenCountry</small></td>
+</tr>
+<tr>
+<td>Mountain</td>
+<td bgcolor=GreenYellow><img src="results/Mountain_image_0047.jpg" width=75 height=75></td>
+<td bgcolor=GreenYellow><img src="results/Mountain_image_0119.jpg" width=75 height=75></td>
+<td bgcolor=LightCoral><img src="results/Industrial_image_0049.jpg" width=100 height=75><br><small>Industrial</small></td>
+<td bgcolor=LightCoral><img src="results/Store_image_0002.jpg" width=100 height=75><br><small>Store</small></td>
+<td bgcolor=SkyBlue><img src="results/Mountain_image_0061.jpg" width=75 height=75><br><small>OpenCountry</small></td>
+<td bgcolor=SkyBlue><img src="results/Mountain_image_0039.jpg" width=75 height=75><br><small>Coast</small></td>
+</tr>
+<tr>
+<td>Forest</td>
+<td bgcolor=GreenYellow><img src="results/Forest_image_0138.jpg" width=75 height=75></td>
+<td bgcolor=GreenYellow><img src="results/Forest_image_0009.jpg" width=75 height=75></td>
+<td bgcolor=LightCoral><img src="results/Mountain_image_0101.jpg" width=75 height=75><br><small>Mountain</small></td>
+<td bgcolor=LightCoral><img src="results/Coast_image_0107.jpg" width=75 height=75><br><small>Coast</small></td>
+<td bgcolor=SkyBlue><img src="results/Forest_image_0093.jpg" width=75 height=75><br><small>OpenCountry</small></td>
+<td bgcolor=SkyBlue><img src="results/Forest_image_0117.jpg" width=75 height=75><br><small>Mountain</small></td>
+</tr>
+<tr>
+<td>Bedroom</td>
+<td bgcolor=GreenYellow><img src="results/Bedroom_image_0064.jpg" width=103 height=75></td>
+<td bgcolor=GreenYellow><img src="results/Bedroom_image_0073.jpg" width=112 height=75></td>
+<td bgcolor=LightCoral><img src="results/Kitchen_image_0118.jpg" width=57 height=75><br><small>Kitchen</small></td>
+<td bgcolor=LightCoral><img src="results/InsideCity_image_0095.jpg" width=75 height=75><br><small>InsideCity</small></td>
+<td bgcolor=SkyBlue><img src="results/Bedroom_image_0030.jpg" width=97 height=75><br><small>LivingRoom</small></td>
+<td bgcolor=SkyBlue><img src="results/Bedroom_image_0050.jpg" width=113 height=75><br><small>Office</small></td>
+</tr>
+<tr>
+<td>Kitchen</td>
+<td bgcolor=GreenYellow><img src="results/Kitchen_image_0192.jpg" width=100 height=75></td>
+<td bgcolor=GreenYellow><img src="results/Kitchen_image_0137.jpg" width=100 height=75></td>
+<td bgcolor=LightCoral><img src="results/LivingRoom_image_0055.jpg" width=100 height=75><br><small>LivingRoom</small></td>
+<td bgcolor=LightCoral><img src="results/LivingRoom_image_0090.jpg" width=114 height=75><br><small>LivingRoom</small></td>
+<td bgcolor=SkyBlue><img src="results/Kitchen_image_0064.jpg" width=107 height=75><br><small>InsideCity</small></td>
+<td bgcolor=SkyBlue><img src="results/Kitchen_image_0168.jpg" width=112 height=75><br><small>Store</small></td>
+</tr>
+
+<tr>
+<tr>
+<td>LivingRoom</td>
+<td bgcolor=GreenYellow><img src="results/LivingRoom_image_0073.jpg" width=100 height=75></td>
+<td bgcolor=GreenYellow><img src="results/LivingRoom_image_0123.jpg" width=98 height=75></td>
+<td bgcolor=LightCoral><img src="results/Bedroom_image_0030.jpg" width=97 height=75><br><small>Bedroom</small></td>
+<td bgcolor=LightCoral><img src="results/Bedroom_image_0066.jpg" width=100 height=75><br><small>Bedroom</small></td>
+<td bgcolor=SkyBlue><img src="results/LivingRoom_image_0058.jpg" width=101 height=75><br><small>Bedroom</small></td>
+<td bgcolor=SkyBlue><img src="results/LivingRoom_image_0145.jpg" width=100 height=75><br><small>Office</small></td>
+</tr>
+
+<tr>
+<th>Category</th>
+<th colspan=2>True positives</th>
+<th colspan=2>False positives with true label</th>
+<th colspan=2>False negatives with predicted label</th>
+</tr>
+</table>
+</center>
+
+
+
+
+
+<h3 id="L5"><b>Conclusion:</b></h3>
+
+<p>&emsp;&emsp; To sum up, using feature extrator to learn classification task is more helpful as compare to using the low resolution image itself. The reason is SVM, and Nearest Neighbour does not explicitly extract features to learn the task. SVM just learns the slope and intercept to draw a boundary between the interest and not interest class. The support vector machine is good as compare to nearest neighbour because if we have more examples for training the NN will be worse on computation. For one query, it must go through the all the possible training examples. In case of SVM, once we have boundary parameters we can just multiply and get the resultant class. This assignment shows that the SVM not only time but also accuracy efficient. </p>
+
+</body>
+</html>
