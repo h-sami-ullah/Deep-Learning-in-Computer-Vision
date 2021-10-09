@@ -1,25 +1,25 @@
-Name: Hafiz Sami Ullah (200436456)
+
 ==================================
 
-Assignment 3: Camera Calibration and Fundamental Matrix Estimation with RANSAC
+Project: Camera Calibration and Fundamental Matrix Estimation with RANSAC
 ------------------------------------------------------------------------------
 
 ![](ransac33.png)
 
 Figure 1: Epipolar lines using Normalized points and RANSAC
 
-  The goal of this assignment is an introduction to camera and geometry
+  The goal of this project is an introduction to camera and geometry
 of the scene. We are required to solve the algorithm for camera
 projection matrix along with the fundamental matrix estimation. Given
 the task of finding the projection matrix and fundamental matrix
-estimation this assignment can be sub divided in three categories:
+estimation this project can be sub divided in three categories:
 
 I will briefly touch on each of the subcategory and algorithm I used to
 perform each of sub task.
 
 ### **Step I**: Approximating fundamental matrix and camera centre {#L1}
 
-   The first step of this assignment is to find the 3-D world to 2-D
+   The first step of this project is to find the 3-D world to 2-D
 transformation. We have 2-D image position and 3-D camera position.
 Fundamental matrix is nothing but the relation between the 3-D mapping
 to the 2-D scene. The homogeneous coordinates of the equation for
@@ -270,7 +270,7 @@ next step is same but with some more computational complexity.
 
 ### **Step III:**Fundamental matrix estimation using RANSAC {#L3}
 
-   The last part of this assignment is to use RANSAC and target the
+   The last part of this project is to use RANSAC and target the
 computational cost using fundamental matrix. Although the SIFT pipeline
 is good and may perform well but we may have errors and it is very
 challenging to determine the outliers. The best fit can be achieved
